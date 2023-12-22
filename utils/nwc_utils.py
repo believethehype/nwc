@@ -1,4 +1,6 @@
 import json
+import time
+
 import requests
 from nostr_sdk import Keys, PublicKey, Client, nip04_encrypt, EventBuilder, Tag
 
@@ -25,8 +27,9 @@ def nwc_zap(connectionstr, bolt11, keys):
     event = EventBuilder(23194, encrypted_content,
                          [pTag]).to_event(keys)
 
+
     event_id = client.send_event(event)
-    print(event_id.to_hex())
+    print("NWC Zap event: " + event_id.to_hex())
 
 
 def parse_connection_str(connectionstring):

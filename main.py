@@ -145,6 +145,7 @@ def add_key_to_env_file(value, oskey):
     if env_path.is_file():
         dotenv.load_dotenv(env_path, verbose=True, override=True)
         dotenv.set_key(env_path, value, oskey)
+        dotenv.load_dotenv(env_path, verbose=True, override=True)
 
 
 if __name__ == '__main__':
@@ -158,9 +159,7 @@ if __name__ == '__main__':
         dotenv.load_dotenv(env_path, verbose=True, override=True)
 
     try:
-        print(f'start first thread')
         t1 = threading.Thread(target=flask).start()
-        print(f'start second thread')
         t2 = threading.Thread(target=nwc).start()
     except Exception as e:
         print("Unexpected error:" + str(e))
