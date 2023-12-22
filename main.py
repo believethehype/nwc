@@ -108,36 +108,37 @@ def handle_nwc_request(event):
     print("Sender Pubkey: " + event.pubkey().to_hex())
 
     user = get_from_sql_table("db/nwc", event.pubkey().to_hex())
-    userkeys = Keys.from_sk_str(user.secret)
+    if user is not None:
+        userkeys = Keys.from_sk_str(user.secret)
 
-    decrypted = nip04_decrypt(sk, userkeys.public_key(), event.content())
-    request = json.loads(decrypted)
+        decrypted = nip04_decrypt(sk, userkeys.public_key(), event.content())
+        request = json.loads(decrypted)
 
-    if request['method'] == "pay_invoice":
-        bolt11 = request['params']['invoice']
-        preimage = pay_bolt11_ln_bits(bolt11, user.lnbitskey, user.lnbitsdomain)
-        print("Preimage: " + preimage)
+        if request['method'] == "pay_invoice":
+            bolt11 = request['params']['invoice']
+            preimage = pay_bolt11_ln_bits(bolt11, user.lnbitskey, user.lnbitsdomain)
+            print("Preimage: " + preimage)
 
-        content = {
-            "result_type": "pay_invoice",
-            "result": {
-                "preimage": preimage
+            content = {
+                "result_type": "pay_invoice",
+                "result": {
+                    "preimage": preimage
+                }
             }
-        }
-        encrypt_keys = Keys.from_sk_str(user.secret).public_key()
+            encrypt_keys = Keys.from_sk_str(user.secret).public_key()
 
-        encrypted_content = nip04_encrypt(sk, encrypt_keys, json.dumps(content))
-        pTag = Tag.parse(["p", event.pubkey().to_hex()])
-        event = EventBuilder(23195, encrypted_content,
-                             [pTag]).to_event(keys)
+            encrypted_content = nip04_encrypt(sk, encrypt_keys, json.dumps(content))
+            pTag = Tag.parse(["p", event.pubkey().to_hex()])
+            event = EventBuilder(23195, encrypted_content,
+                                 [pTag]).to_event(keys)
 
-        client = Client(keys)
-        client.add_relay(os.getenv("RELAY"))
-        client.connect()
-        time.sleep(1.0)
-        event_id = client.send_event(event)
-        print("Reply EventID: " + event_id.to_hex())
-        client.disconnect()
+            client = Client(keys)
+            client.add_relay(os.getenv("RELAY"))
+            client.connect()
+            time.sleep(1.0)
+            event_id = client.send_event(event)
+            print("Reply EventID: " + event_id.to_hex())
+            client.disconnect()
 
 
 def add_key_to_env_file(value, oskey):
