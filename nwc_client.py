@@ -23,7 +23,7 @@ def nostr_client():
     pk = keys.public_key()
     print(f"Nostr Client public key: {pk.to_bech32()}, Hex: {pk.to_hex()} ")
     client = Client(keys)
-    client.add_relay("wss://relay.getalby.com/v1")
+    client.add_relay(os.getenv("RELAY"))
 
     client.connect()
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     # PART 2 use the NWC String to zap
     # Don't do this necesarily in one run, get the nwc string and add it here.
     #  TODO Store the connection string in a db, manually add here if you already have one
-    connectionstring = "nostr+walletconnect:fa42efbb68b7f4455836c2f5df3f3baa83143ac9b3b93df7c3e57d96b5aca958?relay=wss%3A%2F%2Frelay.getalby.com/v1&secret=b94e8c11b9290fee0a924b83b706eaabf7f24e3bb147ef0dafb35a0a9b566699"
+    #connectionstring = ""
     if connectionstring != "":
         RELAY_LIST = ["wss://relay.damus.io", "wss://nostr-pub.wellorder.net", "wss://nos.lol", "wss://nostr.wine",
                       "wss://relay.nostfiles.dev", "wss://nostr.mom", "wss://nostr.oxtr.dev", "wss://relay.nostr.bg",

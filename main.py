@@ -41,7 +41,7 @@ def api_new_user():
             content = {
                 "result_type": "create_account",
                 "params": {
-                    "connectionURI": "nostr+walletconnect:" + keys.public_key().to_hex() + "?relay=wss%3A%2F%2F" + "relay.getalby.com/v1" + "&secret=" + secret
+                    "connectionURI": "nostr+walletconnect:" + keys.public_key().to_hex() + "?relay=" + os.getenv("RELAY").replace("wss://", "wss%3A%2F%2F") + "&secret=" + secret
                 }
             }
             return jsonify(content)
@@ -72,7 +72,7 @@ def nwc():
     pk = keys.public_key()
     print(f"NWC Client public key: {pk.to_bech32()}, Hex: {pk.to_hex()} ")
     client = Client(keys)
-    client.add_relay("wss://relay.getalby.com/v1")
+    client.add_relay(os.getenv("RELAY"))
     client.connect()
 
     create_sql_table("db/nwc")
@@ -132,7 +132,7 @@ def handle_nwc_request(event):
                              [pTag]).to_event(keys)
 
         client = Client(keys)
-        client.add_relay("wss://relay.getalby.com/v1")
+        client.add_relay(os.getenv("RELAY"))
         client.connect()
         time.sleep(1.0)
         event_id = client.send_event(event)
