@@ -1,3 +1,3 @@
 # nwc
 
-Simplistic NWC Server with LNBits support written in Python.
+Simplistic Nostr Wallet Connect Server with LNBits support written in Python.
